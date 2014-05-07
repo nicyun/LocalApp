@@ -25,21 +25,33 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="b63d216ab831faa13cccbcaf17826592" />
+
         <activity
             android:name="com.microsoft.bing.client.localapp.MainActivity"
+            android:launchMode="singleTop"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.microsoft.bing.client.localapp.POIActivity"
+            android:launchMode="singleTop"
             android:label="@string/title_activity_poilist"
             android:parentActivityName="com.microsoft.bing.client.localapp.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.microsoft.bing.client.localapp.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.microsoft.bing.client.localapp.POIDetailActivity"
+            android:label="@string/title_activity_poidetail"
+            android:parentActivityName="com.microsoft.bing.client.localapp.POIActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.microsoft.bing.client.localapp.POIActivity" />
         </activity>
     </application>
 

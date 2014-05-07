@@ -6,12 +6,16 @@ import java.util.List;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -30,24 +34,33 @@ import com.amap.api.services.poisearch.PoiSearch.SearchBound;
 public class POIActivity extends Activity implements OnPoiSearchListener {
 	private ListFragment listFragment;
 	private MapFragment mapFragment;
+	private ProgressDialog loadingDlg;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.poi_activity);
-
+		
+		String type = (String) getIntent().getExtras().get("type");
+		
 		if (savedInstanceState == null) {
 			listFragment = new ListFragment();
 			mapFragment = new MapFragment();
-
+			loadingDlg = new ProgressDialog(POIActivity.this);
+			
 			FragmentTransaction ft = getFragmentManager().beginTransaction();
 			ft.add(R.id.container, mapFragment);
 			ft.add(R.id.container, listFragment);
 			ft.hide(mapFragment);
+			ft.hide(listFragment);
 			ft.commit();
+
+			loadingDlg.setMessage("Loading...");
+			loadingDlg.setCancelable(false);
+			loadingDlg.show();
+			
+			startInitQuery();
 		}
-		
-		startInitQuery();
 	}
 	
 	private void startInitQuery() {
@@ -57,7 +70,7 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 		query.setPageNum(0);
 		PoiSearch poiSearch = new PoiSearch(this, query);
 		// TODO: get current location and configure range
-		poiSearch.setBound(new SearchBound(new LatLonPoint(39.908127, 116.375257), 1000));
+		poiSearch.setBound(new SearchBound(new LatLonPoint(39.978787, 116.311102), 1000));
 		poiSearch.setOnPoiSearchListener(this);
 		poiSearch.searchPOIAsyn();
 	}
@@ -78,12 +91,12 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 
 				if (poiItems != null && poiItems.size() > 0) {
 					// Add to list view.
-					for (PoiItem item : poiItems) {
-						listFragment.addItem(item.getTitle());
-					}
-					
+					listFragment.addPOIs(poiItems);
 					// Add to map view.
-					mapFragment.addPOI(poiItems);
+					mapFragment.addPOIs(poiItems);
+					// This will show list view as default.
+					switchFragment();
+					loadingDlg.dismiss();
 				} else {
 					// No result
 				}
@@ -110,7 +123,9 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
-			// TODO: add a custom button in action bar for this, stop using the setting...
+			return true;
+		}
+		if (id == R.id.action_switchview) {
 			switchFragment();
 			return true;
 		}
@@ -133,7 +148,8 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 	// List fragment.
 	public static class ListFragment extends Fragment {
 
-		private ArrayList<String> listItems = new ArrayList<String>();
+		private List<String> listItems = new ArrayList<String>();
+		private List<PoiItem> poiItems;
 		private ArrayAdapter<String> adapter;
 		
 		public ListFragment() {
@@ -154,10 +170,23 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 			adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, listItems);
 			ListView listView = (ListView) getView().findViewById(R.id.poilistview);
 			listView.setAdapter(adapter);
+			listView.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					PoiItem item = poiItems.get(position);
+			    	Intent intent = new Intent(getActivity(), POIDetailActivity.class);
+			    	intent.putExtra("PoiItem", item);
+			    	startActivity(intent);
+				}
+			});
 		}
-		
-		public void addItem(String item) {
-			listItems.add(item);
+
+		public void addPOIs(List<PoiItem> poiItems) {
+			this.poiItems = poiItems;
+			for (PoiItem item : poiItems) {
+				listItems.add(item.getTitle());
+			}
 			adapter.notifyDataSetChanged();
 		}
 	}
@@ -193,7 +222,7 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 	    	}
 	    }
 		
-		public void addPOI(List<PoiItem> poiItems) {
+		public void addPOIs(List<PoiItem> poiItems) {
 			aMap.clear();
 			PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
 			poiOverlay.removeFromMap();

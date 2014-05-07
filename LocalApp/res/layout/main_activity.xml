@@ -9,7 +9,7 @@
         android:id="@+id/ResterantButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="附近餐馆"
+        android:text="@string/resterant"
         android:onClick="onResterantButtonClick" />
 
 </LinearLayout>

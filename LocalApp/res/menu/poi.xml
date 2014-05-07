@@ -3,6 +3,13 @@
     tools:context="com.microsoft.bing.client.localapp.POIActivity" >
 
     <item
+        android:id="@+id/action_switchview"
+        android:icon="@drawable/ic_action_refresh"
+        android:orderInCategory="99"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_switchview"/>
+    
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
