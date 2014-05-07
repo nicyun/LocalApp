@@ -5,11 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/ResterantButton"
-        android:layout_width="wrap_content"
+    <GridView
+        android:id="@+id/poiTypesGrid"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/resterant"
-        android:onClick="onResterantButtonClick" />
+        android:gravity="center"
+        android:numColumns="3" >
+    </GridView>
 
 </LinearLayout>

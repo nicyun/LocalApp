@@ -41,7 +41,7 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.poi_activity);
 		
-		String type = (String) getIntent().getExtras().get("type");
+		String typeCode = (String) getIntent().getExtras().get("type");
 		
 		if (savedInstanceState == null) {
 			listFragment = new ListFragment();
@@ -59,13 +59,12 @@ public class POIActivity extends Activity implements OnPoiSearchListener {
 			loadingDlg.setCancelable(false);
 			loadingDlg.show();
 			
-			startInitQuery();
+			startInitQuery(typeCode);
 		}
 	}
 	
-	private void startInitQuery() {
-		// Detailed category please check: http://code.autonavi.com/Public/down/AMap_Api_Table.zip
-		Query query = new Query("", "050000", "010");
+	private void startInitQuery(String typeCode) {
+		Query query = new Query("", typeCode, "010");
 		query.setPageSize(10);
 		query.setPageNum(0);
 		PoiSearch poiSearch = new PoiSearch(this, query);

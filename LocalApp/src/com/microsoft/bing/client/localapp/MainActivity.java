@@ -6,19 +6,36 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 
 public class MainActivity extends Activity {
+	
+	private ImageAdapter imageAdapter;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        
+        initPoiTypeGrid();
     }
     
-    public void onResterantButtonClick(View view) {
-    	Intent intent = new Intent(this, POIActivity.class);
-    	intent.putExtra("type", "resterant");
-    	startActivity(intent);
+    private void initPoiTypeGrid() {
+    	GridView gridView = (GridView) findViewById(R.id.poiTypesGrid);
+    	imageAdapter = new ImageAdapter(this);
+    	gridView.setAdapter(imageAdapter);
+    	gridView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+		    	Intent intent = new Intent(MainActivity.this, POIActivity.class);
+		    	intent.putExtra("type", imageAdapter.getCode(position));
+		    	startActivity(intent);
+			}
+    		
+    	});
     }
     
     @Override
